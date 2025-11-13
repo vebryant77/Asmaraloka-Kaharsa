@@ -1,0 +1,125 @@
+/* Reset dan Font */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Background halaman */
+body {
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Kotak utama */
+.container {
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 850px;
+  border: 2px solid #e2e8f0;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+}
+
+/* Baris isi form */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+/* Kolom kiri dan kanan */
+.column {
+  flex: 1 1 350px;
+}
+
+/* Judul tiap kolom */
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+/* Setiap input box */
+.input-box {
+  margin-bottom: 18px;
+}
+
+.input-box span {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+/* Input dan Select */
+.input-box input,
+.input-box select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  font-size: 14px;
+  background-color: #fff;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -ms-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+}
+
+.input-box input::placeholder {
+  color: #aaa;
+}
+
+.input-box input:focus,
+.input-box select:focus {
+  border-color: #7c5cf5;
+  box-shadow: 0 0 4px rgba(124, 92, 245, 0.3);
+}
+
+/* Tombol Bayar */
+.btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #8b6cfb;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.btn:hover {
+  background-color: #744ce6;
+}
+
+/* Responsif untuk layar kecil */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .container {
+    padding: 30px;
+  }
+}

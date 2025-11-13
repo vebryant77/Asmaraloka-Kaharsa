@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kelola Paket - Admin</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{--brand:#3f51b5}
+    body{font-family:Poppins,Arial;background:#f4f6fa}
+    .sidebar{width:240px;background:#263238;color:#fff;min-height:100vh;position:fixed}
+    .sidebar a{color:#cfd8dc;display:block;padding:12px 20px;text-decoration:none}
+    .sidebar a:hover{background:#1e2a2b;color:#fff}
+    .topbar{height:64px;background:#fff;border-bottom:1px solid #e6e9ee;position:fixed;left:240px;right:0;display:flex;align-items:center;padding:0 20px;z-index:5}
+    .content{margin-left:240px;padding:24px}
+  </style>
+  </head>
+<body>
+  <div class="sidebar">
+    <div class="p-4">
+      <h4 style="color:var(--brand);margin:0">Asmaraloka</h4>
+      <small>Kaharsa Admin</small>
+    </div>
+    <nav class="mt-3">
+      <a href="./admin-model.html">Dashboard</a>
+      <a href="./customers.html">Kelola User</a>
+      <a href="./orders.html">Kelola Pesanan</a>
+      <a href="./payments.html">Kelola Pembayaran</a>
+      <a href="./packages.html">Paket & Harga</a>
+      <a href="./reports.html">Laporan</a>
+      <a href="../index.html">Kembali ke Admin Home</a>
+    </nav>
+  </div>
+  <div class="topbar">
+    <div><h5 style="margin:0">Kelola Paket</h5></div>
+    <div class="d-flex align-items-center">
+      <div id="adminUsername" class="mr-3 text-muted"></div>
+      <button id="logoutBtn" class="btn btn-outline-secondary btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:90px">
+    <div class="d-flex mb-3">
+      <button id="addPkgBtn" class="btn btn-primary">Tambah Paket</button>
+      <input id="searchPkg" placeholder="Cari paket" class="form-control ml-2" style="max-width:320px">
+    </div>
+
+    <div id="alertArea"></div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr><th>ID</th><th>Judul</th><th>Harga</th><th>Deskripsi</th><th>Aksi</th></tr>
+      </thead>
+      <tbody id="packagesTbody"></tbody>
+    </table>
+  </div>
+
+  <div class="modal" tabindex="-1" role="dialog" id="pkgModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="pkgForm">
+        <div class="modal-header"><h5 class="modal-title">Tambah/Edit Paket</h5></div>
+        <div class="modal-body">
+          <input type="hidden" id="pkgId">
+          <div class="form-group"><label>Judul</label><input id="title" class="form-control" required></div>
+          <div class="form-group"><label>Harga</label><input id="price" class="form-control" type="number" step="0.01"></div>
+          <div class="form-group"><label>Deskripsi</label><textarea id="description" class="form-control"></textarea></div>
+        </div>
+        <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan</button><button type="button" class="btn btn-secondary" id="closePkgModal">Batal</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    async function fetchPackages(){
+      const res = await fetch('../api/admin_packages.php', {credentials:'include'});
+      const data = await res.json();
+      if(!res.ok){ showAlert('danger', data.error||'Gagal memuat'); return; }
+      renderPackages(data.packages || []);
+    }
+    function renderPackages(pkgs){ const tbody = document.getElementById('packagesTbody'); tbody.innerHTML=''; pkgs.forEach(p=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${p.id}</td><td>${p.title}</td><td>Rp ${parseFloat(p.price).toLocaleString('id-ID')}</td><td>${p.description||''}</td><td><button class='btn btn-sm btn-info edit-pkg' data-id='${p.id}'>Edit</button> <button class='btn btn-sm btn-danger del-pkg' data-id='${p.id}'>Hapus</button></td>`; tbody.appendChild(tr); }); document.querySelectorAll('.edit-pkg').forEach(b=>b.addEventListener('click', onEdit)); document.querySelectorAll('.del-pkg').forEach(b=>b.addEventListener('click', onDelete)); }
+    function showAlert(type,msg){ document.getElementById('alertArea').innerHTML = `<div class='alert alert-${type}'>${msg}</div>`; setTimeout(()=>document.getElementById('alertArea').innerHTML='',4000); }
+
+    document.getElementById('addPkgBtn').addEventListener('click', ()=>{ $('#pkgModal').modal('show'); document.getElementById('pkgForm').reset(); document.getElementById('pkgId').value=''; });
+    document.getElementById('closePkgModal').addEventListener('click', ()=>$('#pkgModal').modal('hide'));
+
+    document.getElementById('pkgForm').addEventListener('submit', async function(e){ e.preventDefault(); const id = document.getElementById('pkgId').value; const payload = { title: document.getElementById('title').value, description: document.getElementById('description').value, price: document.getElementById('price').value || 0 }; if(!id){ const res = await fetch('../api/admin_packages.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'include'}); const j = await res.json(); if(res.ok){ showAlert('success','Paket ditambahkan'); $('#pkgModal').modal('hide'); fetchPackages(); } else showAlert('danger', j.error||'Error'); } else { payload.id = id; const res = await fetch('../api/admin_packages.php',{method:'PUT',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(payload),credentials:'include'}); const j = await res.json(); if(res.ok){ showAlert('success','Paket diperbarui'); $('#pkgModal').modal('hide'); fetchPackages(); } else showAlert('danger', j.error||'Error'); } });
+
+    async function onEdit(e){ const id = e.currentTarget.dataset.id; const res = await fetch('../api/admin_packages.php?id='+id,{credentials:'include'}); const j = await res.json(); if(!res.ok){ showAlert('danger', j.error||'Error'); return; } const p = j.package; document.getElementById('pkgId').value = p.id; document.getElementById('title').value = p.title; document.getElementById('price').value = p.price; document.getElementById('description').value = p.description; $('#pkgModal').modal('show'); }
+    async function onDelete(e){ if(!confirm('Hapus paket?')) return; const id = e.currentTarget.dataset.id; const res = await fetch('../api/admin_packages.php?id='+id,{method:'DELETE',credentials:'include'}); const j = await res.json(); if(res.ok){ showAlert('success','Terhapus'); fetchPackages(); } else showAlert('danger', j.error||'Error'); }
+
+    document.getElementById('searchPkg').addEventListener('input', function(){ const q=this.value.toLowerCase(); document.querySelectorAll('#packagesTbody tr').forEach(tr=>{ tr.style.display = (tr.textContent.toLowerCase().indexOf(q)===-1)?'none':''; }); });
+
+    (async function(){
+      try{
+        const r = await fetch('../api/check-admin-session.php',{credentials:'include'});
+        if (!r.ok) throw new Error('not auth');
+        const d = await r.json();
+        if(!d.authenticated){ window.location.href = '../login.html'; return; }
+        document.getElementById('adminUsername').textContent = 'Admin: ' + (d.admin_username||'admin');
+        document.getElementById('logoutBtn').addEventListener('click', async ()=>{ if(!confirm('Yakin ingin logout?')) return; await fetch('../api/admin-logout.php',{method:'POST',credentials:'include'}); window.location.href='../login.html'; });
+        fetchPackages();
+      }catch(e){ console.error(e); window.location.href = '../login.html'; }
+    })();
+  </script>
+</body>
+</html>

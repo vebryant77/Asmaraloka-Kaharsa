@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Payment - Asmaraloka Kaharsa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,300,600,400italic,700' rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Sacramento" rel="stylesheet">
+  <link rel="stylesheet" href="css/animate.css">
+  <link rel="stylesheet" href="css/icomoon.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/magnific-popup.css">
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+  <link rel="stylesheet" href="css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/modernizr-2.6.2.min.js"></script>
+  <style>
+    .payment-container {
+      max-width: 650px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .form-group label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      padding: 10px 12px;
+    }
+    .form-control:focus {
+      border-color: #d8a574;
+      box-shadow: 0 0 0 0.2rem rgba(216, 165, 116, 0.25);
+    }
+    .btn-submit {
+      background-color: #d8a574;
+      color: white;
+      border: none;
+      padding: 12px 40px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .btn-submit:hover {
+      background-color: #c49566;
+    }
+    .payment-summary {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .summary-total {
+      font-weight: 700;
+      font-size: 16px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .file-upload-group {
+      border: 2px dashed #d8a574;
+      padding: 20px;
+      text-align: center;
+      border-radius: 4px;
+      background: #f5f5f5;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .file-upload-group:hover {
+      background: #f0f0f0;
+      border-color: #c49566;
+    }
+    .file-upload-group input[type="file"] {
+      display: none;
+    }
+    .file-name {
+      margin-top: 10px;
+      color: #666;
+      font-size: 12px;
+    }
+    .alert {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="fh5co-loader"></div>
+  <div id="page">
+    <nav class="fh5co-nav" role="navigation">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-2">
+            <div id="fh5co-logo"><a href="index.html">Asmaraloka Kaharsa<strong>.</strong></a></div>
+          </div>
+          <div class="col-xs-10 text-right menu-1">
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="about.html">About Us</a></li>
+              <li class="has-dropdown">
+                <a href="services.html">Services</a>
+                <ul class="dropdown">
+                  <li><a href="services.html">Wedding Package</a></li>
+                  <li><a href="venue.html">Venue Package</a></li>
+                  <li><a href="wo.html">Wedding Organizer</a></li>
+                </ul>
+              </li>
+              <li class="has-dropdown">
+                <a href="gallery.html">Gallery</a>
+              </li>
+              <li><a href="contact.html">Contact</a></li>
+              <li id="nav-auth"><a href="login.html">Login</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header id="fh5co-header" class="fh5co-cover fh5co-cover-sm" role="banner" style="background-image:url(images/img_bg_2.jpg);">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 text-center">
+            <div class="display-t">
+              <div class="display-tc animate-box" data-animate-effect="fadeIn">
+                <h1>Konfirmasi Pembayaran</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="payment-container">
+        <h3 style="text-align: center; margin-bottom: 30px;">Form Pemesanan & Pembayaran</h3>
+
+        <!-- Payment Summary -->
+        <div class="payment-summary">
+          <div class="summary-row">
+            <span>Paket:</span>
+            <strong id="summaryPackage">-</strong>
+          </div>
+          <div class="summary-row">
+            <span>Harga:</span>
+            <strong id="summaryPrice">-</strong>
+          </div>
+          <div class="summary-total summary-row">
+            <span>Total:</span>
+            <strong id="summaryTotal">-</strong>
+          </div>
+        </div>
+
+        <!-- Alert Area -->
+        <div id="alertArea"></div>
+
+        <!-- Payment Form -->
+        <form id="paymentForm" method="POST" enctype="multipart/form-data">
+          <input type="hidden" id="packageId" name="package_id" value="">
+          <input type="hidden" id="packageName" name="package_name" value="">
+          <input type="hidden" id="packagePrice" name="package_price" value="">
+
+          <!-- User Info Section -->
+          <div class="form-group">
+            <label for="nama">Nama Lengkap *</label>
+            <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Masukkan email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="telp">Nomor Telepon *</label>
+            <input type="tel" class="form-control" id="telp" name="telp" placeholder="Masukkan nomor telepon" required>
+          </div>
+
+          <div class="form-group">
+            <label for="tanggal">Tanggal Acara *</label>
+            <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="form-group">
+            <label for="metode">Metode Pembayaran *</label>
+            <select class="form-control" id="metode" name="metode" required>
+              <option value="">-- Pilih Metode --</option>
+              <option value="transfer">Transfer Bank</option>
+              <option value="emoney">E-Money (Dana, Gopay, OVO)</option>
+              <option value="cash">Bayar Langsung</option>
+            </select>
+          </div>
+
+          <!-- Bank Info (shown if transfer selected) -->
+          <div id="bankInfo" style="display:none; background: #fff3cd; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 14px;">
+            <strong>Silakan transfer ke rekening berikut:</strong><br>
+            Bank BCA: 1234567890 (a.n. Asmaraloka Kaharsa)<br>
+            Bank Mandiri: 0987654321 (a.n. Asmaraloka Kaharsa)
+          </div>
+
+          <!-- Payment Proof Upload -->
+          <div class="form-group">
+            <label>Upload Bukti Pembayaran *</label>
+            <div class="file-upload-group" onclick="document.getElementById('paymentFile').click();">
+              <p style="margin: 0; color: #666;">
+                <i class="icon-upload" style="font-size: 24px; color: #d8a574;"></i><br>
+                Klik di sini atau drag file untuk upload<br>
+                <small>(JPG, PNG, PDF - Max 5MB)</small>
+              </p>
+              <input type="file" id="paymentFile" name="payment_proof" accept=".jpg,.jpeg,.png,.pdf" required>
+              <div class="file-name" id="fileName"></div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group">
+            <label for="notes">Catatan Tambahan</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Masukkan catatan jika ada..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">Kirim Pemesanan & Pembayaran</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-modern" style="margin-top: 60px;">
+      <div class="container">
+        <div class="row" style="margin-bottom:30px;">
+          <div class="col-md-3 col-sm-6">
+            <h4>Nikah Happy Bebas Worry</h4>
+            <p>Yuk rencanakan pernikahan impianmu bareng Asmaraloka Kaharsa, dengan pilihan vendor terbaik dan terpercaya.</p>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <h4>Layanan Kami</h4>
+            <ul>
+              <li><a href="services.html">Wedding Package</a></li>
+              <li><a href="venue.html">Venue Package</a></li>
+              <li><a href="wo.html">Wedding Organizer</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <h4>Kontak</h4>
+            <ul>
+              <li><a href="mailto:asmaralokakaharsa@gmail.com">Email</a></li>
+              <li><a href="tel:+6281252264470">WhatsApp: +62812-5226-4470</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <h4>Follow Us</h4>
+            <div>
+              <a href="#" class="btn btn-default"><i class="icon-instagram"></i></a>
+              <a href="#" class="btn btn-default"><i class="icon-facebook"></i></a>
+              <a href="#" class="btn btn-default"><i class="icon-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div class="gototop js-top">
+    <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+  </div>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Parse URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      const packageName = urlParams.get('package') || 'Paket Tidak Ditemukan';
+      const packagePrice = urlParams.get('price') || 'Rp 0';
+      const packageId = urlParams.get('id') || '';
+
+      // Fill hidden inputs and summary
+      document.getElementById('packageId').value = packageId;
+      document.getElementById('packageName').value = packageName;
+      document.getElementById('packagePrice').value = packagePrice;
+      document.getElementById('summaryPackage').textContent = packageName;
+      document.getElementById('summaryPrice').textContent = packagePrice;
+      document.getElementById('summaryTotal').textContent = packagePrice;
+
+      // Show/hide bank info based on payment method
+      document.getElementById('metode').addEventListener('change', function() {
+        const bankInfo = document.getElementById('bankInfo');
+        if (this.value === 'transfer') {
+          bankInfo.style.display = 'block';
+        } else {
+          bankInfo.style.display = 'none';
+        }
+      });
+
+      // File upload preview
+      document.getElementById('paymentFile').addEventListener('change', function() {
+        const fileName = this.files[0]?.name || '';
+        const fileSize = (this.files[0]?.size / 1024 / 1024).toFixed(2) || 0;
+        if (fileName) {
+          document.getElementById('fileName').textContent = 'File: ' + fileName + ' (' + fileSize + ' MB)';
+        }
+      });
+
+      // Allow drag and drop
+      const uploadArea = document.querySelector('.file-upload-group');
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = '#f0f0f0';
+      });
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.background = '#f5f5f5';
+      });
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = '#f5f5f5';
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          document.getElementById('paymentFile').files = files;
+          const fileName = files[0].name;
+          const fileSize = (files[0].size / 1024 / 1024).toFixed(2);
+          document.getElementById('fileName').textContent = 'File: ' + fileName + ' (' + fileSize + ' MB)';
+        }
+      });
+
+      // Form submission
+      document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const alertArea = document.getElementById('alertArea');
+
+        try {
+          // Validate required fields
+          const nama = document.getElementById('nama').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const telp = document.getElementById('telp').value.trim();
+          const metode = document.getElementById('metode').value;
+          const paymentFile = document.getElementById('paymentFile').files[0];
+
+          if (!nama || !email || !telp || !metode || !paymentFile) {
+            showAlert('danger', 'Mohon isi semua field yang diperlukan');
+            return;
+          }
+
+          // Check file size (max 5MB)
+          if (paymentFile.size > 5 * 1024 * 1024) {
+            showAlert('danger', 'Ukuran file tidak boleh lebih dari 5MB');
+            return;
+          }
+
+          showAlert('success', 'Pesanan Anda sedang diproses. Terima kasih! Silakan menunggu...');
+          
+          // Redirect to indexlog.html after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'indexlog.html';
+          }, 2000);
+
+        } catch (error) {
+          showAlert('danger', 'Terjadi kesalahan: ' + error.message);
+        }
+      });
+
+      function showAlert(type, message) {
+        const alertArea = document.getElementById('alertArea');
+        alertArea.innerHTML = '<div class="alert alert-' + type + '" role="alert">' + message + '</div>';
+        alertArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  </script>
+</body>
+</html>

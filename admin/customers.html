@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kelola User - Admin</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{--brand:#3f51b5}
+    body{font-family:Poppins,Arial;background:#f4f6fa}
+    .sidebar{width:240px;background:#263238;color:#fff;min-height:100vh;position:fixed}
+    .sidebar a{color:#cfd8dc;display:block;padding:12px 20px;text-decoration:none}
+    .sidebar a:hover{background:#1e2a2b;color:#fff}
+    .topbar{height:64px;background:#fff;border-bottom:1px solid #e6e9ee;position:fixed;left:240px;right:0;display:flex;align-items:center;padding:0 20px;z-index:5}
+    .content{margin-left:240px;padding:24px}
+  </style>
+  </head>
+<body>
+  <div class="sidebar">
+    <div class="p-4">
+      <h4 style="color:var(--brand);margin:0">Asmaraloka Kaharsa</h4>
+      <small>Admin</small>
+    </div>
+    <nav class="mt-3">
+      <a href="./admin-model.html">Dashboard</a>
+      <a href="./customers.html">Kelola User</a>
+      <a href="./orders.html">Kelola Pesanan</a>
+      <a href="./payments.html">Kelola Pembayaran</a>
+      <a href="./packages.html">Paket & Harga</a>
+      <a href="./reports.html">Laporan</a>
+      <a href="../index.html">Kembali ke Admin Home</a>
+    </nav>
+  </div>
+  <div class="topbar">
+    <div><h5 style="margin:0">Kelola User</h5></div>
+    <div class="d-flex align-items-center">
+      <div id="adminUsername" class="mr-3 text-muted"></div>
+      <button id="logoutBtn" class="btn btn-outline-secondary btn-sm">Logout</button>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:90px">
+    <div class="d-flex mb-3">
+      <button id="addUserBtn" class="btn btn-primary">Tambah User</button>
+      <input id="searchInput" placeholder="Cari username/email" class="form-control ml-2" style="max-width:320px">
+    </div>
+
+    <div id="alertArea"></div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr><th>ID</th><th>Username</th><th>Nama Lengkap</th><th>Email</th><th>No. Telp</th><th>Aksi</th></tr>
+      </thead>
+      <tbody id="usersTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" tabindex="-1" role="dialog" id="userModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form id="userForm">
+        <div class="modal-header"><h5 class="modal-title">Tambah/Edit User</h5></div>
+        <div class="modal-body">
+          <input type="hidden" id="userId">
+          <div class="form-group"><label>Username</label><input id="username" class="form-control" required></div>
+          <div class="form-group"><label>Password (isi jika ingin mengubah)</label><input id="password" class="form-control" type="password"></div>
+          <div class="form-group"><label>Nama Depan</label><input id="nama_depan" class="form-control"></div>
+          <div class="form-group"><label>Nama Belakang</label><input id="nama_belakang" class="form-control"></div>
+          <div class="form-group"><label>Email</label><input id="email" class="form-control" type="email"></div>
+          <div class="form-group"><label>No. Telp</label><input id="no_telp" class="form-control"></div>
+        </div>
+        <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan</button><button type="button" class="btn btn-secondary" id="closeModal">Batal</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    async function fetchUsers(){
+      const res = await fetch('../api/admin_customers.php', {credentials:'include'});
+      const data = await res.json();
+      if(!res.ok){ showAlert('danger', data.error||'Gagal memuat'); return; }
+      renderUsers(data.users || []);
+    }
+    function renderUsers(users){
+      const tbody = document.getElementById('usersTbody'); tbody.innerHTML='';
+      users.forEach(u=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${u.id}</td><td>${u.username}</td><td>${u.nama_depan||''} ${u.nama_belakang||''}</td><td>${u.email||''}</td><td>${u.no_telp||''}</td><td><button class='btn btn-sm btn-info edit-btn' data-id='${u.id}'>Edit</button> <button class='btn btn-sm btn-danger del-btn' data-id='${u.id}'>Hapus</button></td>`;
+        tbody.appendChild(tr);
+      });
+      document.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click', onEdit));
+      document.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click', onDelete));
+    }
+    function showAlert(type,msg){ document.getElementById('alertArea').innerHTML = `<div class='alert alert-${type}'>${msg}</div>`; setTimeout(()=>document.getElementById('alertArea').innerHTML='',4000); }
+
+    document.getElementById('addUserBtn').addEventListener('click', ()=>{
+      $('#userModal').modal('show'); document.getElementById('userForm').reset(); document.getElementById('userId').value='';
+    });
+    document.getElementById('closeModal').addEventListener('click', ()=>$('#userModal').modal('hide'));
+
+    document.getElementById('userForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const id = document.getElementById('userId').value;
+      const payload = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        nama_depan: document.getElementById('nama_depan').value,
+        nama_belakang: document.getElementById('nama_belakang').value,
+        email: document.getElementById('email').value,
+        no_telp: document.getElementById('no_telp').value
+      };
+      if(!id){
+        const res = await fetch('../api/admin_customers.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'include'});
+        const j = await res.json(); if(res.ok) { showAlert('success','User ditambahkan'); $('#userModal').modal('hide'); fetchUsers(); } else showAlert('danger', j.error||'Error');
+      } else {
+        payload.id = id;
+        const res = await fetch('../api/admin_customers.php',{method:'PUT',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(payload),credentials:'include'});
+        const j = await res.json(); if(res.ok){ showAlert('success','User diperbarui'); $('#userModal').modal('hide'); fetchUsers(); } else showAlert('danger', j.error||'Error');
+      }
+    });
+
+    async function onEdit(e){
+      const id = e.currentTarget.dataset.id;
+      const res = await fetch('../api/admin_customers.php?id='+id,{credentials:'include'});
+      const j = await res.json(); if(!res.ok){ showAlert('danger', j.error||'Error'); return; }
+      const u = j.user; document.getElementById('userId').value = u.id; document.getElementById('username').value = u.username; document.getElementById('nama_depan').value = u.nama_depan; document.getElementById('nama_belakang').value = u.nama_belakang; document.getElementById('email').value = u.email; document.getElementById('no_telp').value = u.no_telp;
+      $('#userModal').modal('show');
+    }
+    async function onDelete(e){ if(!confirm('Hapus user?')) return; const id = e.currentTarget.dataset.id; const res = await fetch('../api/admin_customers.php?id='+id,{method:'DELETE',credentials:'include'}); const j = await res.json(); if(res.ok) { showAlert('success','Terhapus'); fetchUsers(); } else showAlert('danger', j.error||'Error'); }
+
+    // search
+    document.getElementById('searchInput').addEventListener('input', function(){ const q = this.value.toLowerCase(); document.querySelectorAll('#usersTbody tr').forEach(tr=>{ tr.style.display = (tr.textContent.toLowerCase().indexOf(q)===-1)?'none':''; }); });
+
+    // check admin session
+    (async function(){
+      try{
+        const r = await fetch('../api/check-admin-session.php',{credentials:'include'});
+        if (!r.ok) throw new Error('not auth');
+        const d = await r.json();
+        if(!d.authenticated){ window.location.href = '../login.html'; return; }
+        document.getElementById('adminUsername').textContent = 'Admin: ' + (d.admin_username||'admin');
+        document.getElementById('logoutBtn').addEventListener('click', async ()=>{ if(!confirm('Yakin ingin logout?')) return; await fetch('../api/admin-logout.php',{method:'POST',credentials:'include'}); window.location.href='../login.html'; });
+        fetchUsers();
+      }catch(e){ console.error(e); window.location.href = '../login.html'; }
+    })();
+  </script>
+</body>
+</html>

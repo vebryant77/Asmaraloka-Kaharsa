@@ -22,7 +22,7 @@
                 '5 Crew Wedding Organizer',
                 'Bonus: Photobooth, Buku Tamu, Kuetart 2 Tingkat'
             ],
-            cta: 'Konsultasi Sekarang',
+            cta: 'Pesan Sekarang',
             category: 'Wedding Package'
         },
         {
@@ -43,7 +43,7 @@
                 '6 Crew Wedding Organizer',
                 'Bonus: Photobooth, Preweeding, Buku tamu, Kuetart 3 Tingkat'
             ],
-            cta: 'Konsultasi Sekarang',
+            cta: 'Pesan Sekarang',
             category: 'Wedding Package'
         },
         {
@@ -64,7 +64,7 @@
                 '7 Crew Wedding Organizer',
                 'Bonus: Photobooth, Preweeding, Buku tamu, Kuetart 4 Tingkat'
             ],
-            cta: 'Konsultasi Sekarang',
+            cta: 'Pesan Sekarang',
             category: 'Wedding Package'
         },
         {
@@ -85,7 +85,7 @@
                 '7 Crew Wedding Organizer',
                 'Bonus: Photobooth, Preweeding, Buku tamu, Coffeebreak 100 pax, kue tart 7 Tingkat '
             ],
-            cta: 'Konsultasi Sekarang',
+            cta: 'Pesan Sekarang',
             category: 'Wedding Package'
         },
         {
@@ -118,7 +118,7 @@
             features: [
                 'Contact For Custom Features'
             ],
-            cta: 'Konsultasi Sekarang',
+            cta: 'Pesan Sekarang',
             category: 'Wedding Package'
         }
     ];
@@ -168,10 +168,8 @@
         content.appendChild(ul);
 
         var btn = document.createElement('a');
-        var waMessage = 'Saya ingin memesan paket ' + svc.title;
-        btn.href = 'https://wa.me/+6281252264470?text=' + encodeURIComponent(waMessage);
+        btn.href = 'payment.html?package=' + encodeURIComponent(svc.title) + '&price=' + encodeURIComponent(svc.price) + '&id=' + svc.id;
         btn.className = 'btn btn-primary';
-        btn.target = '_blank';
         btn.innerText = svc.cta;
         content.appendChild(btn);
 

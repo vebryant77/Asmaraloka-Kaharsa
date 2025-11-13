@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Admin Dashboard - Asmaraloka Kaharsa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../css/bootstrap.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      background-color: #f5f5f5;
+    }
+    .admin-navbar {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 0;
+      margin-bottom: 30px;
+    }
+    .admin-navbar a {
+      color: white;
+      text-decoration: none;
+      margin-right: 20px;
+    }
+    .admin-navbar a:hover {
+      color: #d8a574;
+    }
+    .dashboard-header {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .admin-card {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .stat-box {
+      text-align: center;
+      padding: 20px;
+      border-left: 4px solid #d8a574;
+    }
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      color: #d8a574;
+    }
+    .stat-label {
+      color: #666;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin Navigation -->
+  <div class="admin-navbar">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h3 style="margin: 0; color: white;">Asmaraloka Kaharsa - Admin</h3>
+        </div>
+        <div class="col-md-6 text-right">
+          <span id="adminUsername" style="margin-right: 20px;"></span>
+          <a href="#" id="logoutBtn">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="dashboard-header">
+      <h2>Selamat Datang di Admin Dashboard</h2>
+      <p id="welcomeMessage">Loading...</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row">
+      <div class="col-md-3">
+        <div class="admin-card stat-box">
+          <div class="stat-number" id="totalUsers">0</div>
+          <div class="stat-label">Total User</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="admin-card stat-box">
+          <div class="stat-number" id="totalOrders">0</div>
+          <div class="stat-label">Total Pesanan</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="admin-card stat-box">
+          <div class="stat-number" id="totalPayments">0</div>
+          <div class="stat-label">Total Pembayaran</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="admin-card stat-box">
+          <div class="stat-number" id="totalRevenue">Rp 0</div>
+          <div class="stat-label">Revenue</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Sections -->
+    <div class="row" style="margin-top: 40px;">
+      <div class="col-md-12">
+        <div class="admin-card">
+          <h3>Kelola Data</h3>
+          <p>Menu manajemen akan ditambahkan di sini:</p>
+          <ul>
+            <li><strong>Kelola User</strong> - Tampilkan semua user terdaftar, edit, hapus</li>
+            <li><strong>Kelola Pesanan</strong> - Lihat detail pemesanan dari user</li>
+            <li><strong>Kelola Pembayaran</strong> - Verifikasi dan kelola status pembayaran</li>
+            <li><strong>Kelola Paket</strong> - Edit harga dan deskripsi paket</li>
+            <li><strong>Laporan</strong> - Export laporan penjualan dan revenue</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activities (Placeholder) -->
+    <div class="row" style="margin-top: 20px; margin-bottom: 40px;">
+      <div class="col-md-12">
+        <div class="admin-card">
+          <h3>Aktivitas Terbaru</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Aktivitas</th>
+                <th>Waktu</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="activityLog">
+              <tr>
+                <td colspan="4" style="text-align: center; color: #999;">Tidak ada aktivitas terbaru</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+  <script>
+    // Check admin session pada load
+    window.addEventListener('load', async function() {
+      try {
+        const response = await fetch('../api/check-admin-session.php', {
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (!data.authenticated) {
+          alert('Anda tidak memiliki akses. Silakan login sebagai admin.');
+          window.location.href = '../login.html';
+          return;
+        }
+
+        // Tampilkan username admin
+        document.getElementById('adminUsername').textContent = 'Admin: ' + data.admin_username;
+        document.getElementById('welcomeMessage').textContent = 'Selamat datang, ' + data.admin_username + '!';
+
+        // Load data (optional - placeholder untuk sekarang)
+        loadDashboardData();
+
+      } catch (error) {
+        console.error('Error:', error);
+        window.location.href = '../login.html';
+      }
+    });
+
+    // Load Dashboard Data
+    async function loadDashboardData() {
+      try {
+        // Placeholder - sesuaikan dengan API Anda
+        document.getElementById('totalUsers').textContent = '5';
+        document.getElementById('totalOrders').textContent = '12';
+        document.getElementById('totalPayments').textContent = '10';
+        document.getElementById('totalRevenue').textContent = 'Rp 50.000.000';
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      if (!confirm('Yakin ingin logout?')) return;
+
+      try {
+        const response = await fetch('../api/admin-logout.php', {
+          method: 'POST',
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Logout berhasil');
+          window.location.href = '../login.html';
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
